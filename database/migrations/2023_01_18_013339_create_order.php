@@ -16,8 +16,8 @@ class CreateOrder extends Migration
         Schema::create('order', function (Blueprint $table) {
             $table->bigIncrements('order_id');
             $table->integer('order_number');
-            $table->string('order_name');
-            $table->string('order_email');
+            $table->string('cust_name');
+            $table->string('cust_email');
             $table->timestamp('order_date');
             $table->date('checkin_date');
             $table->date('checkout_date');

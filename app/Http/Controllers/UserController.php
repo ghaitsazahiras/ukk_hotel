@@ -5,6 +5,9 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTexceptions;
 
 class UserController extends Controller
 {
@@ -14,19 +17,25 @@ class UserController extends Controller
         'name' => 'required|string|max:255',
         'email' => 'required|string|email|max:255|unique:users',
         'password' => 'required|string|min:6|confirmed',
-        'image' => 'nullable|image|max:2048',
-        'role' => 'required|integer'
+        'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        'role' => 'required|string|max:255'
         ]);
         
         if($validator->fails()){
             return response()->json($validator->errors()->toJson(), 400);
         }
+
+        //define nama file yang akan di upload
+        $imageName = time() .'.'. $request->image->extension();
+
+        //proses upload
+        $request->image->move(public_path('images'), $imageName);
     
         $user = User::create([
         'name' => $request->get('name'),
         'email' => $request->get('email'),
         'password' => Hash::make($request->get('password')),
-        'image' => $request->get('image'),
+        'image' => $imageName,
         'role' => $request->get('role'),
         ]);
     

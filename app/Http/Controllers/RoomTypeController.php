@@ -14,18 +14,24 @@ class RoomTypeController extends Controller
             'room_type_name'    => 'required',
             'price'             => 'required',
             'description'       => 'required',
-            'image'             => 'required'
+            'image'             => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
 
         if($validator->fails()){
             return Response()->json($validator->errors());
         }
 
+        //define nama file yang akan di upload
+        $imageName = time() .'.'. $req->image->extension();
+
+        //proses upload
+        $req->image->move(public_path('images'), $imageName);
+
         $save = RoomTypeModel::create([
             'room_type_name'    => $req->room_type_name,
             'price'             => $req->price,
             'description'       => $req->description,
-            'image'             => $req->image
+            'image'             => $imageName
         ]);
 
         $data = RoomTypeModel::where('room_type_name', '=', $req->room_type_name)-> get();
@@ -68,8 +74,7 @@ class RoomTypeController extends Controller
         $validator = Validator::make($req->all(),[
             'room_type_name'    => 'required',
             'price'             => 'required',
-            'description'       => 'required',
-            'image'             => 'required'
+            'description'       => 'required'
         ]);
 
         if($validator->fails()){
@@ -79,8 +84,7 @@ class RoomTypeController extends Controller
         $update=RoomTypeModel::where('room_type_id',$id)->update([
             'room_type_name'    => $req->room_type_name,
             'price'             => $req->price,
-            'description'       => $req->description,
-            'image'             => $req->image
+            'description'       => $req->description
         ]);
         
         $data=RoomTypeModel::where('room_type_id', '=', $id)->get();
@@ -106,12 +110,12 @@ class RoomTypeController extends Controller
             return Response() -> json([
                 'status' => 1,
                 'message' => 'Succes delete data!'
-        ]);
+            ]);
         } else {
             return Response() -> json([
                 'status' => 0,
                 'message' => 'Failed delete data!'
-        ]);
+            ]);
         }
     }
 }
